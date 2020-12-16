@@ -11,7 +11,7 @@ import 'notifications_settings.dart';
 final MethodChannel _channel = MethodChannel(ChannelType.method.name);
 
 typedef IncomingPush = void Function(Map<String, dynamic> payload);
-typedef IncomingAction = void Function(String uuid, String callerId);
+typedef IncomingAction = Future<void> Function(String uuid, String callerId);
 typedef OnUpdatePushToken = void Function(String token);
 typedef OnAudioSessionStateChanged = void Function(bool active);
 
@@ -25,6 +25,7 @@ class FlutterIOSVoIPKit {
     return _instance;
   }
 
+
   factory FlutterIOSVoIPKit() => _getInstance();
 
   FlutterIOSVoIPKit._internal() {
@@ -35,6 +36,15 @@ class FlutterIOSVoIPKit {
     _eventSubscription = EventChannel(ChannelType.event.name)
         .receiveBroadcastStream()
         .listen(_eventListener, onError: _errorListener);
+
+    _channel.setMethodCallHandler((call) async {
+      if (call.method == "onDidRejectIncomingCall") {
+        await onDidRejectIncomingCall(
+          call.arguments['uuid'],
+          call.arguments['incoming_caller_id'],
+        );
+      }
+    });
   }
 
   /// [onDidReceiveIncomingPush] is not called when the app is not running, because app is not yet running when didReceiveIncomingPushWith is called.

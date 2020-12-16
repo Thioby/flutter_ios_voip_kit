@@ -4,13 +4,14 @@ import UserNotifications
 
 public class SwiftFlutterIOSVoIPKitPlugin: NSObject {
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(name: FlutterPluginChannelType.method.name,  binaryMessenger: registrar.messenger())
-        let plugin = SwiftFlutterIOSVoIPKitPlugin(messenger: registrar.messenger())
-        registrar.addMethodCallDelegate(plugin, channel: channel)
+        let methodChannel = FlutterMethodChannel(name: FlutterPluginChannelType.method.name,  binaryMessenger: registrar.messenger())
+        let plugin = SwiftFlutterIOSVoIPKitPlugin(messenger: registrar.messenger(), methodChannel: methodChannel)
+        registrar.addMethodCallDelegate(plugin, channel: methodChannel)
     }
 
-    init(messenger: FlutterBinaryMessenger) {
-        self.voIPCenter = VoIPCenter(eventChannel: FlutterEventChannel(name: FlutterPluginChannelType.event.name, binaryMessenger: messenger))
+    init(messenger: FlutterBinaryMessenger, methodChannel: FlutterMethodChannel) {
+        let eventChannel = FlutterEventChannel(name: FlutterPluginChannelType.event.name, binaryMessenger: messenger)
+        self.voIPCenter = VoIPCenter(eventChannel: eventChannel, methodChannel: methodChannel)
         super.init()
         self.notificationCenter.delegate = self
     }
