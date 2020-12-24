@@ -184,7 +184,8 @@ extension VoIPCenter: CXProviderDelegate {
 //                             "uuid": self.callKitCenter.uuidString as Any,
 //                             "incoming_caller_id": self.callKitCenter.incomingCallerId as Any])
             let arguments = ["uuid": self.callKitCenter.uuidString as Any,
-                             "incoming_caller_id": self.callKitCenter.incomingCallerId as Any]
+                             "incoming_caller_id": self.callKitCenter.incomingCallerId as Any,
+                             "isEndCallManually": self.callKitCenter.isEndCallManually as Any]
             self.methodChannel.invokeMethod(EventChannel.onDidRejectIncomingCall.rawValue, arguments: arguments) { (result) in
                 self.callKitCenter.disconnected(reason: .remoteEnded)
                 action.fulfill()
