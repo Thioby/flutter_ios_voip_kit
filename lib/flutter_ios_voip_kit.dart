@@ -12,19 +12,20 @@ final MethodChannel _channel = MethodChannel(ChannelType.method.name);
 
 typedef IncomingPush = void Function(Map<String, dynamic> payload);
 typedef IncomingAction = Future<void> Function(String uuid, String callerId);
+typedef RejectAction = Future<void> Function(String uuid, String callerId, bool isEndCallManually);
 typedef OnUpdatePushToken = void Function(String token);
 typedef OnAudioSessionStateChanged = void Function(bool active);
 
 class FlutterIOSVoIPKit {
   static FlutterIOSVoIPKit get instance => _getInstance();
   static FlutterIOSVoIPKit _instance;
+
   static FlutterIOSVoIPKit _getInstance() {
     if (_instance == null) {
       _instance = FlutterIOSVoIPKit._internal();
     }
     return _instance;
   }
-
 
   factory FlutterIOSVoIPKit() => _getInstance();
 
@@ -42,6 +43,7 @@ class FlutterIOSVoIPKit {
         await onDidRejectIncomingCall(
           call.arguments['uuid'],
           call.arguments['incoming_caller_id'],
+          call.arguments['isEndCallManually'],
         );
       }
     });
@@ -54,7 +56,7 @@ class FlutterIOSVoIPKit {
   /// This is because the app is already running when the incoming call screen is displayed for CallKit.
   /// If not called, make sure the app is calling [onDidAcceptIncomingCall] and [onDidRejectIncomingCall] in the Dart class(ex: main.dart) that is called immediately after the app is launched.
   IncomingAction onDidAcceptIncomingCall;
-  IncomingAction onDidRejectIncomingCall;
+  RejectAction onDidRejectIncomingCall;
   OnUpdatePushToken onDidUpdatePushToken;
 
   OnAudioSessionStateChanged onAudioSessionStateChanged;
@@ -105,14 +107,17 @@ class FlutterIOSVoIPKit {
     });
   }
 
-  Future<void> endCall() async {
+  Future<void> endCall({bool isEndCallManually = false}) async {
     print('🎈 endCall');
 
     if (Platform.isAndroid) {
       return null;
     }
 
-    return await _channel.invokeMethod('endCall');
+    return await _channel.invokeMethod(
+      'endCall',
+      {'isEndCallManually': isEndCallManually},
+    );
   }
 
   Future<void> acceptIncomingCall({
@@ -240,6 +245,7 @@ class FlutterIOSVoIPKit {
         onDidRejectIncomingCall(
           map['uuid'],
           map['incoming_caller_id'],
+          map['isEndCallManually'],
         );
         break;
 

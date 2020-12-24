@@ -26,6 +26,7 @@ class CallKitCenter: NSObject {
     private var isCallConnected: Bool = false
     private var maximumCallGroups: Int = 1
     var answerCallAction: CXAnswerCallAction?
+    var isEndCallManually: Bool = false
 
     var isCalleeBeforeAcceptIncomingCall: Bool {
         return self.isReceivedIncomingCall && !self.isCallConnected
@@ -112,7 +113,8 @@ class CallKitCenter: NSObject {
         self.disconnected(reason: .unanswered)
     }
 
-    func endCall() {
+    func endCall(isEndCallManually: Bool) {
+        self.isEndCallManually = isEndCallManually
         let endCallAction = CXEndCallAction(call: self.uuid)
         let transaction = CXTransaction(action: endCallAction)
         self.controller.request(transaction) { error in
@@ -135,6 +137,7 @@ class CallKitCenter: NSObject {
     }
 
     func disconnected(reason: CXCallEndedReason) {
+        self.isEndCallManually = false
         self.uuidString = nil
         self.incomingCallerId = nil
         self.incomingCallerName = nil

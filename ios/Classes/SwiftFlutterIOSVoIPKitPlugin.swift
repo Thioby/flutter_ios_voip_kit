@@ -47,7 +47,10 @@ public class SwiftFlutterIOSVoIPKitPlugin: NSObject {
     }
 
     private func endCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        self.voIPCenter.callKitCenter.endCall()
+        guard let args = call.arguments as? [String: Any], let isEndCallManually = args["isEndCallManually"] as? Bool else {
+            return
+        }
+        self.voIPCenter.callKitCenter.endCall(isEndCallManually: isEndCallManually)
         result(nil)
     }
 

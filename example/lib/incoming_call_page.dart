@@ -36,6 +36,7 @@ class _IncomingCallPageState extends State<IncomingCallPage> {
     voIPKit.onDidRejectIncomingCall = (
       String uuid,
       String callerId,
+      bool isEndCallManually,
     ) async {
       if (isTalking) {
         return;
