@@ -22,6 +22,8 @@ class CallKitCenter: NSObject {
     private(set) var uuidString: String?
     private(set) var incomingCallerId: String?
     private(set) var incomingCallerName: String?
+    private(set) var info: [String: Any]?
+
     private var isReceivedIncomingCall: Bool = false
     private var isCallConnected: Bool = false
     private var maximumCallGroups: Int = 1
@@ -76,12 +78,13 @@ class CallKitCenter: NSObject {
         }
     }
 
-    func incomingCall(uuidString: String, callerId: String, callerName: String, completion: @escaping (Error?) -> Void) {
+    func incomingCall(uuidString: String, callerId: String, callerName: String, info: [String: Any]?, completion: @escaping (Error?) -> Void) {
         self.uuidString = uuidString
         self.incomingCallerId = callerId
         self.incomingCallerName = callerName
         self.isReceivedIncomingCall = true
-
+        self.info = info
+        
         self.uuid = UUID(uuidString: uuidString)!
         let update = CXCallUpdate()
         update.remoteHandle = CXHandle(type: .generic, value: callerName)

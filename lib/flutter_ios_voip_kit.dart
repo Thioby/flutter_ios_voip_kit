@@ -12,7 +12,7 @@ final MethodChannel _channel = MethodChannel(ChannelType.method.name);
 
 typedef IncomingPush = void Function(Map<String, dynamic> payload);
 typedef IncomingAction = Future<void> Function(String uuid, String callerId);
-typedef RejectAction = Future<void> Function(String uuid, String callerId, bool isEndCallManually);
+typedef RejectAction = Future<void> Function(String uuid, String callerId, bool isEndCallManually, Map<String, dynamic> payload);
 typedef OnUpdatePushToken = void Function(String token);
 typedef OnAudioSessionStateChanged = void Function(bool active);
 
@@ -44,6 +44,7 @@ class FlutterIOSVoIPKit {
           call.arguments['uuid'],
           call.arguments['incoming_caller_id'],
           call.arguments['isEndCallManually'],
+          call.arguments['info'],
         );
       }
     });
@@ -246,6 +247,7 @@ class FlutterIOSVoIPKit {
           map['uuid'],
           map['incoming_caller_id'],
           map['isEndCallManually'],
+          Map<String, dynamic>.from(map['info'] as Map),
         );
         break;
 

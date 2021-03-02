@@ -125,9 +125,10 @@ public class SwiftFlutterIOSVoIPKitPlugin: NSObject {
                 return
         }
 
+        let info = ["infoTest": "text"]
         self.voIPCenter.callKitCenter.incomingCall(uuidString: uuid,
                                                    callerId: callerId,
-                                                   callerName: callerName) { (error) in
+                                                   callerName: callerName, info: info) { (error) in
             if let error = error {
                 print("❌ testIncomingCall error: \(error.localizedDescription)")
                 result(FlutterError(code: "testIncomingCall",
