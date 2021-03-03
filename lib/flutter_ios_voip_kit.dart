@@ -44,7 +44,7 @@ class FlutterIOSVoIPKit {
           call.arguments['uuid'],
           call.arguments['incoming_caller_id'],
           call.arguments['isEndCallManually'],
-          Map<String, dynamic>.from(map['info'] as Map),
+          Map<String, dynamic>.from(call.arguments['info'] as Map),
         );
       }
     });
