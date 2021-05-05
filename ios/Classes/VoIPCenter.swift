@@ -96,7 +96,7 @@ extension VoIPCenter: PKPushRegistryDelegate {
         print("🎈 VoIP didUpdate pushCredentials")
         UserDefaults.standard.set(pushCredentials.token, forKey: didUpdateTokenKey)
         
-        self.eventSink?(["event": EventChannel.onDidUpdatePushToken.rawVa lue,
+        self.eventSink?(["event": EventChannel.onDidUpdatePushToken.rawValue,
                          "token": pushCredentials.token.hexString])
     }
 
