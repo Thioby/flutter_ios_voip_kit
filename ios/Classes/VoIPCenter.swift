@@ -29,7 +29,8 @@ class VoIPCenter: NSObject {
         case onDidReceiveIncomingPush
         case onDidAcceptIncomingCall
         case onDidRejectIncomingCall
-        
+        case onDidEndCall
+
         case onDidUpdatePushToken
         case onDidActivateAudioSession
         case onDidDeactivateAudioSession
@@ -207,7 +208,17 @@ extension VoIPCenter: CXProviderDelegate {
                 self.callKitCenter.disconnected(reason: .remoteEnded)
                 action.fulfill()
             }
-        }
+        } else {
+                      let arguments = ["uuid": self.callKitCenter.uuidString as Any,
+                                       "incoming_caller_id": self.callKitCenter.incomingCallerId as Any,
+                                       "isEndCallManually": true,
+                                       "info": self.callKitCenter.info as Any
+                      ]
+                      self.methodChannel.invokeMethod(EventChannel.onDidEndCall.rawValue, arguments: arguments) { (result) in
+                          self.callKitCenter.disconnected(reason: .remoteEnded)
+                          action.fulfill()
+                      }
+                  }
     }
     
     public func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {

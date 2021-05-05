@@ -58,6 +58,7 @@ class FlutterIOSVoIPKit {
   /// If not called, make sure the app is calling [onDidAcceptIncomingCall] and [onDidRejectIncomingCall] in the Dart class(ex: main.dart) that is called immediately after the app is launched.
   IncomingAction onDidAcceptIncomingCall;
   RejectAction onDidRejectIncomingCall;
+  RejectAction onDidEndCall;
   OnUpdatePushToken onDidUpdatePushToken;
 
   OnAudioSessionStateChanged onAudioSessionStateChanged;
@@ -270,6 +271,14 @@ class FlutterIOSVoIPKit {
         print('🎈 onDidDeactivateAudioSession');
         if (onAudioSessionStateChanged != null)
           onAudioSessionStateChanged(false);
+        break;
+      case 'onDidEndCall':
+        onDidEndCall?.call(
+          map['uuid'],
+          map['incoming_caller_id'],
+          map['isEndCallManually'],
+          Map<String, dynamic>.from(map['info'] as Map),
+        );
         break;
     }
   }
