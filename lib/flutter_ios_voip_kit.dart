@@ -47,6 +47,14 @@ class FlutterIOSVoIPKit {
           Map<String, dynamic>.from(call.arguments['info'] as Map),
         );
       }
+      if (call.method == "onDidEndCall") {
+        await onDidEndCall?.call(
+          call.arguments['uuid'],
+          call.arguments['incoming_caller_id'],
+          call.arguments['isEndCallManually'],
+          Map<String, dynamic>.from(call.arguments['info'] as Map),
+        );
+      }
     });
   }
 

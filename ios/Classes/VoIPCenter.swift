@@ -208,15 +208,17 @@ extension VoIPCenter: CXProviderDelegate {
                 self.callKitCenter.disconnected(reason: .remoteEnded)
                 action.fulfill()
             }
-        } else {
+        } else if(self.callKitCenter.isInCall) {
+            print("❎ VoIP CXEndCallAction - end call")
                       let arguments = ["uuid": self.callKitCenter.uuidString as Any,
                                        "incoming_caller_id": self.callKitCenter.incomingCallerId as Any,
                                        "isEndCallManually": true,
                                        "info": self.callKitCenter.info as Any
                       ]
+                      self.callKitCenter.disconnected(reason: .remoteEnded)
                       self.methodChannel.invokeMethod(EventChannel.onDidEndCall.rawValue, arguments: arguments) { (result) in
-                          self.callKitCenter.disconnected(reason: .remoteEnded)
-                          action.fulfill()
+                        action.fulfill()
+                        print("❎ VoIP CXEndCallAction - end call fullfilled")
                       }
                   }
     }

@@ -33,6 +33,10 @@ class CallKitCenter: NSObject {
     var isCalleeBeforeAcceptIncomingCall: Bool {
         return self.isReceivedIncomingCall && !self.isCallConnected
     }
+    
+    var isInCall: Bool {
+        return self.isCallConnected
+    }
 
     override init() {
         if let path = Bundle.main.path(forResource: "Info", ofType: "plist") {
@@ -79,6 +83,8 @@ class CallKitCenter: NSObject {
     }
 
     func incomingCall(uuidString: String, callerId: String, callerName: String, info: [String: Any]?, completion: @escaping (Error?) -> Void) {
+        print("🎈 VoIP incomingCall registration: \(uuidString)")
+        
         self.uuidString = uuidString
         self.incomingCallerId = callerId
         self.incomingCallerName = callerName
@@ -118,6 +124,7 @@ class CallKitCenter: NSObject {
     }
 
     func endCall(isEndCallManually: Bool) {
+        print("🎈 VoIP endCall executed: \(self.uuid)")
         self.isEndCallManually = isEndCallManually
         let endCallAction = CXEndCallAction(call: self.uuid)
         let transaction = CXTransaction(action: endCallAction)
