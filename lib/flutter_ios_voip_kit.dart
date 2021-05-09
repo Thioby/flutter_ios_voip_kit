@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ios_voip_kit/call_state_type.dart';
 import 'package:flutter_ios_voip_kit/channel_type.dart';
+import 'package:flutter_ios_voip_kit/latest_notification.dart';
 
 import 'notifications_settings.dart';
 
@@ -194,6 +195,17 @@ class FlutterIOSVoIPKit {
 
     final result = await _channel.invokeMethod('getLocalNotificationsSettings');
     return NotificationSettings.createFromMap(result);
+  }
+
+  Future<LatestIosVoipNotification> getLatestNotification() async {
+    print('🎈 getLatestNotification');
+
+    if (Platform.isAndroid) {
+      return null;
+    }
+
+    final result = await _channel.invokeMethod('getLatestNotification');
+    return LatestIosVoipNotification.fromMap(result);
   }
 
   Future<void> testIncomingCall({

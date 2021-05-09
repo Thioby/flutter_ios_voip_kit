@@ -87,6 +87,16 @@ class VoIPCenter: NSObject {
         self.pushRegistry.delegate = self
         self.callKitCenter.setup(delegate: self)
     }
+    
+    //MARK: - Notification cache
+    public enum UserCallReaction: String {
+        case Accepted
+        case Rejected
+    }
+    
+    public var voipPushCache: [String: Any]?
+    public var userCallLatestReaction: UserCallReaction?
+    
 }
 
 extension VoIPCenter: PKPushRegistryDelegate {
@@ -104,6 +114,7 @@ extension VoIPCenter: PKPushRegistryDelegate {
     // NOTE: iOS11 or more support
 
     public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType, completion: @escaping () -> Void) {
+        
         print("🎈 VoIP didReceiveIncomingPushWith completion: \(payload.dictionaryPayload)")
 
         let info = self.parse(payload: payload)
@@ -112,6 +123,7 @@ extension VoIPCenter: PKPushRegistryDelegate {
         if(callMissed) {
             self.callKitCenter.disconnected(reason: .remoteEnded)
         }else {
+            voipPushCache = info
             self.callKitCenter.incomingCall(uuidString: info?["uuid"] as! String,
                                             callerId: info?["incoming_caller_id"] as! String,
                                             callerName: callerName,
@@ -141,6 +153,7 @@ extension VoIPCenter: PKPushRegistryDelegate {
         if(callMissed){
             self.callKitCenter.disconnected(reason: .remoteEnded)
         }else {
+            voipPushCache = info
             self.callKitCenter.incomingCall(uuidString: info?["uuid"] as! String,
                                             callerId: info?["incoming_caller_id"] as! String,
                                             callerName: callerName, info: info) { error in
@@ -185,6 +198,8 @@ extension VoIPCenter: CXProviderDelegate {
     }
 
     public func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
+        self.userCallLatestReaction = UserCallReaction.Accepted;
+        
         print("✅ VoIP CXAnswerCallAction")
         self.callKitCenter.answerCallAction = action
         self.configureAudioSession()
@@ -196,6 +211,7 @@ extension VoIPCenter: CXProviderDelegate {
     public func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
         print("❎ VoIP CXEndCallAction")
         if (self.callKitCenter.isCalleeBeforeAcceptIncomingCall) {
+            self.userCallLatestReaction = UserCallReaction.Rejected;
 //            self.eventSink?(["event": EventChannel.onDidRejectIncomingCall.rawValue,
 //                             "uuid": self.callKitCenter.uuidString as Any,
 //                             "incoming_caller_id": self.callKitCenter.incomingCallerId as Any])

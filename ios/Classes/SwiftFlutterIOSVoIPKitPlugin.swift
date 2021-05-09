@@ -2,6 +2,7 @@ import Flutter
 import UIKit
 import UserNotifications
 
+
 public class SwiftFlutterIOSVoIPKitPlugin: NSObject {
     public static func register(with registrar: FlutterPluginRegistrar) {
         let methodChannel = FlutterMethodChannel(name: FlutterPluginChannelType.method.name,  binaryMessenger: registrar.messenger())
@@ -139,6 +140,29 @@ public class SwiftFlutterIOSVoIPKitPlugin: NSObject {
             result(nil)
         }
     }
+    
+    
+    private func getLatestNotification(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        
+        let voipCache: [String: Any]?  = self.voIPCenter.voipPushCache
+        let userReaction: VoIPCenter.UserCallReaction? = self.voIPCenter.userCallLatestReaction
+        
+        if (voipCache == nil || userReaction == nil){
+            result(nil)
+            return
+        }
+        
+        var res: [String: Any] = [String:Any]()
+        res["action"] = userReaction?.rawValue
+        res["payload"] = voipCache
+        
+        result(res)
+        
+        self.voIPCenter.voipPushCache = nil;
+        self.voIPCenter.userCallLatestReaction = nil;
+
+    }
+    
 }
 
 extension SwiftFlutterIOSVoIPKitPlugin: UNUserNotificationCenterDelegate {
@@ -164,6 +188,7 @@ extension SwiftFlutterIOSVoIPKitPlugin: FlutterPlugin {
         case requestAuthLocalNotification
         case getLocalNotificationsSettings
         case testIncomingCall
+        case getLatestNotification
     }
 
     // MARK: - FlutterPlugin（method channel）
@@ -194,6 +219,8 @@ extension SwiftFlutterIOSVoIPKitPlugin: FlutterPlugin {
                 self.getLocalNotificationsSettings(call, result: result)
             case .testIncomingCall:
                 self.testIncomingCall(call, result: result)
+            case .getLatestNotification:
+                self.getLatestNotification(call, result: result)
         }
     }
 }
